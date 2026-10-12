@@ -1,0 +1,98 @@
+name = "Nexora Agent Workspace"
+tagline = "One chat. The right specialist, selected automatically."
+description = "A secure AI workspace with 99 selectable specialists, free-tier model routing, private per-user chat history, and approval-before-action policy."
+category = "Developer Tools"
+tags = ["ai","agents","orchestration","free-llm","github"]
+
+[[secret]]
+name = "OPENROUTER_API_KEY"
+provider = "custom"
+required = false
+description = "OpenRouter key. The application only routes to model IDs ending in :free."
+
+[[secret]]
+name = "GROQ_API_KEY"
+provider = "custom"
+required = false
+description = "Groq API key for the available free tier. If free quota is exhausted, the app falls back to OpenRouter Free or returns a clear error."
+
+[[secret]]
+name = "GITHUB_TOKEN"
+provider = "custom"
+required = true
+description = "Fine-grained GitHub token with Contents: Read access to the private agency-agents repository. Used to load specialist instructions."
+
+# Optional, least-privilege end-user connectors. Each user must authorize their own account.
+[[api]]
+name = "github"
+auth = "oauth2"
+base_url = "https://api.github.com"
+authorize_url = "https://github.com/login/oauth/authorize"
+token_url = "https://github.com/login/oauth/access_token"
+scopes = ["read:user", "repo"]
+per_user = true
+required = false
+description = "GitHub access to public repositories and the signed-in user's profile."
+
+[api.headers]
+Accept = "application/vnd.github+json"
+
+[[api]]
+name = "google_drive"
+auth = "oauth2"
+base_url = "https://www.googleapis.com/drive/v3"
+authorize_url = "https://accounts.google.com/o/oauth2/v2/auth"
+token_url = "https://oauth2.googleapis.com/token"
+scopes = ["https://www.googleapis.com/auth/drive.file"]
+per_user = true
+required = false
+description = "Create and manage files created or explicitly opened with Nexora in Google Drive."
+
+[[api]]
+name = "notion"
+auth = "oauth2"
+base_url = "https://api.notion.com/v1"
+authorize_url = "https://api.notion.com/v1/oauth/authorize"
+token_url = "https://api.notion.com/v1/oauth/token"
+scopes = []
+per_user = true
+required = false
+description = "Search and read pages shared with the connected Notion integration."
+
+[api.headers]
+Notion-Version = "2022-06-28"
+
+[[api]]
+name = "render"
+auth = "api_key"
+base_url = "https://api.render.com/v1"
+key_header = "Authorization"
+key_prefix = "Bearer "
+per_user = true
+required = false
+description = "Create and manage Render services. Every deploy action requires explicit user approval."
+
+[auth]
+enabled = true
+providers = ["email"]
+# Email one-time-code sign-in. End-user API routes are gated with access = "user".
+
+[db.tables.workspace_conversations]
+read = "own"
+write = "own"
+
+[db.tables.workspace_usage]
+read = "own"
+write = "own"
+
+[db.tables.workspace_skills]
+read = "own"
+write = "own"
+
+[db.tables.workspace_knowledge]
+read = "own"
+write = "own"
+
+[db.tables.workspace_builds]
+read = "own"
+write = "own"

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b0d10"><title>Nexora Agent Workspace</title><link rel="stylesheet" href="/style.css"></head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+  <a class="brand" href="/" aria-label="Nexora home"><span class="brandmark">N</span><span><strong>Nexora</strong><small>Agent Workspace</small></span></a>
+  <button id="newChat" class="newchat" type="button">＋ New chat</button>
+  <button id="openSettings" class="newchat settings-launch" type="button">▣ Build Apps</button>
+  <div class="history-title">Recent chats</div><nav id="chatHistory" class="history" aria-label="Recent chats"></nav>
+  <div class="sidebottom"><span class="dot"></span><span id="sideStatus">Checking connection</span><button id="signOut" class="signout" type="button">Sign out</button></div>
+</aside>
+<main class="app">
+<header><div><h1>What can we work on?</h1><p>One chat. The right specialist, selected automatically.</p></div><span id="status" class="status">Checking…</span></header>
+<section class="setup" id="setup"><span id="provider">Checking free providers…</span><span id="footer">Loading specialist catalogue…</span></section>
+<div class="policy"><span aria-hidden="true">✓</span> Approval-first mode · Nexora must ask before external or consequential actions.</div>
+<div class="agent-row"><label for="agentSelect">Specialist</label><select id="agentSelect" aria-label="Choose specialist"><option value="">Auto-select best specialist</option></select><span id="agentHint">Auto mode chooses from the full catalogue.</span></div>
+<section id="chat" class="chat" aria-live="polite"><div class="welcome"><div class="welcome-icon">✦</div><h2>How can I help?</h2><p>Describe the task in your own words. Nexora will choose a specialist automatically.</p><div class="suggestions"><button type="button">Review a Python bug</button><button type="button">Plan a secure IT setup</button><button type="button">Draft a marketing campaign</button></div></div></section>
+<form id="form" class="composer"><label class="sr-only" for="input">Your task</label><textarea id="input" maxlength="8000" placeholder="Ask anything" rows="1" required></textarea><div id="attachmentTray" class="attachment-tray" aria-live="polite"></div><div class="composer-bottom"><div class="composer-tools"><div class="plus-wrap"><button id="plusButton" class="plus-button" type="button" aria-label="Add an attachment" aria-expanded="false">＋</button><div id="plusMenu" class="plus-menu" hidden><button id="attachImage" type="button">▧ Add photos</button><button id="attachFile" type="button">▤ Add files</button><button id="openSettingsFromMenu" type="button">✦ Skills & knowledge</button><button id="openBuilderFromMenu" type="button">▣ Build an app</button></div></div><input id="imageFiles" class="sr-only" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple><input id="documentFiles" class="sr-only" type="file" accept=".txt,.md,.csv,.json,.log,.html,.xml,.yaml,.yml,.py,.js,.ts,.css,.sql,.sh,.pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/*" multiple><span id="charCount">0 / 8000</span></div><div class="composer-right"><button id="qualityMode" class="think-button" type="button" aria-pressed="false"><span aria-hidden="true">♧</span> Think</button><button id="micButton" class="mic-button" type="button" aria-label="Voice input" title="Voice input">♩</button><button id="send" class="send-button" type="submit" aria-label="Send message">↑</button></div></div><p class="attachment-help">Images and documents · max 5 MB each · up to 4 files · click Think for a more careful answer</p></form>
+<p class="disclaimer">Free provider availability and limits can change. Review AI output before using it in production.</p>
+</main>
+</div>
+<div id="settingsModal" class="modal" hidden>
+  <div id="modalScrim" class="modal-scrim"></div>
+  <section class="settings-dialog" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <header class="settings-header"><div><h2 id="settingsTitle">Teach Nexora</h2><p>Personal skills, reusable knowledge and connected tools.</p></div><button id="closeSettings" class="modal-close" type="button" aria-label="Close settings">×</button></header>
+    <div class="settings-tabs"><button id="builderTab" class="settings-tab" type="button">Build Apps</button><button id="skillsTab" class="settings-tab active" type="button">Skills & Knowledge</button><button id="connectorsTab" class="settings-tab" type="button">Connectors</button></div>
+    <section id="builderPanel" class="settings-panel" hidden>
+      <p class="settings-note">Describe the web app you want. Nexora generates real front-end files and a downloadable ZIP. After review, you can approve pushing a new private GitHub repository and creating a Render static site. This starter builds front-end apps; database/backend integrations need their own setup.</p>
+      <form id="builderForm" class="skill-form">
+        <label for="builderName">App name</label><input id="builderName" maxlength="80" placeholder="e.g. Team Task Manager" required>
+        <label for="builderDescription">What should the app do?</label><textarea id="builderDescription" maxlength="2000" rows="5" placeholder="Explain target users, key screens, actions, design style and what should happen when buttons are clicked…" required></textarea>
+        <button id="generateApp" type="submit">✦ Generate web app</button>
+      </form>
+      <div id="builderStatus" class="settings-note">Generated apps stay as drafts until you approve publishing.</div>
+      <div class="settings-divider"></div><h3>Your app projects</h3>
+      <div id="buildList" class="build-list"><p class="empty-state">Loading app projects…</p></div>
+      <div class="settings-divider"></div><h3>Render workspace</h3>
+      <p class="settings-note">Only needed after GitHub push. The service creation action will use the free static-site configuration and require your explicit confirmation.</p>
+      <div class="render-workspace-row"><select id="renderOwnerSelect" aria-label="Choose Render workspace"><option value="">Connect Render to load workspaces</option></select><button id="refreshRenderOwners" class="settings-secondary" type="button">Refresh</button></div>
+    </section>
+    <section id="skillsPanel" class="settings-panel">
+      <p class="settings-note">Skills guide how Nexora works. Knowledge files provide reusable reference content to relevant future chats. They are private to your account.</p>
+      <h3>Add a skill</h3>
+      <form id="skillForm" class="skill-form"><label for="skillName">Skill name</label><input id="skillName" maxlength="80" placeholder="e.g. IT Infra Expert" required><label for="skillDescription">When to use it (optional)</label><input id="skillDescription" maxlength="300" placeholder="e.g. Server, network and cloud tasks"><label for="skillInstructions">Instructions</label><textarea id="skillInstructions" maxlength="5000" rows="4" placeholder="Tell Nexora your preferred workflow, format and quality checks..." required></textarea><button id="saveSkill" type="submit">Save skill</button></form>
+      <div class="setting-card-top"><h3>Your skills</h3><button id="importAgentSkills" class="settings-secondary" type="button">Import Agent-skill from GitHub</button></div><p class="settings-note">Import skills from your GitHub repository. Nexora will use only skills relevant to each request.</p><div id="skillList" class="settings-list"><p class="empty-state">Loading skills…</p></div>
+      <div class="settings-divider"></div>
+      <h3>Knowledge library</h3><p class="settings-note">Upload a text, PDF, DOCX or code document once. Nexora can retrieve relevant content in future chats.</p>
+      <label class="knowledge-upload" for="knowledgeFile">＋ Add knowledge file</label><input id="knowledgeFile" class="sr-only" type="file" accept=".txt,.md,.csv,.json,.log,.html,.xml,.yaml,.yml,.py,.js,.ts,.css,.sql,.sh,.pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/*">
+      <div id="knowledgeList" class="settings-list"><p class="empty-state">Loading knowledge…</p></div>
+    </section>
+    <section id="connectorsPanel" class="settings-panel" hidden><p class="settings-note">Connectors only work after the account's OAuth/API setup is completed. Nexora will not claim a connection unless the provider verifies it. External changes still need your approval.</p><div id="connectorList" class="connector-list"><p class="empty-state">Checking connections…</p></div><a class="setup-link" href="https://hatchable.com/console/projects/nexora-agent" target="_blank" rel="noopener">Open connector setup ↗</a>
+      <div class="settings-divider"></div><h3>Repository integrations</h3><p class="settings-note">Reviewed against your repositories. These are honest readiness states—not claims that their code is already running inside Nexora.</p>
+      <div class="repo-integration-list">
+        <article class="repo-integration"><div class="setting-card-top"><strong>Godmod3</strong><span class="build-status">Needs API deployment</span></div><p>Multi-model racing/API engine. The repo includes a Docker API, but Nexora needs its deployed HTTPS endpoint and a secured API key before it can call it. The API documentation describes a limited free tier and requires an upstream model provider key unless configured on the server.</p><a href="https://github.com/vivekpareek1/Godmod3" target="_blank" rel="noopener">Open repository ↗</a></article>
+        <article class="repo-integration"><div class="setting-card-top"><strong>public-api-data</strong><span class="build-status">Catalog source</span></div><p>Curated API directory (CSV/JSON), not a live universal API service. A future API Finder can search it, but private-repo access must be authorized first and each listed API's cost, key requirements and terms must be checked separately.</p><a href="https://github.com/vivekpareek1/public-api-data" target="_blank" rel="noopener">Open repository ↗</a></article>
+        <article class="repo-integration"><div class="setting-card-top"><strong>Agent-skill</strong><span class="build-status">Empty repository</span></div><p>No skill files are available to import yet. Nexora's built-in personal Skills & Knowledge library works now; reusable versioned SKILL.md files can be added to this repository after approval.</p><a href="https://github.com/vivekpareek1/Agent-skill" target="_blank" rel="noopener">Open repository ↗</a></article>
+        <article class="repo-integration"><div class="setting-card-top"><strong>ArtCraft</strong><span class="build-status">License review required</span></div><p>This is a Rust/Tauri desktop creative application, not a drop-in web API. Its current repository license restricts using its code to build a competing image/video product. Nexora will not copy or embed its code without appropriate permission.</p><a href="https://github.com/vivekpareek1/artcraft" target="_blank" rel="noopener">Open repository ↗</a></article>
+      </div>
+    </section>
+  </section>
+</div>
+<script src="/app.js"></script>
+</body></html>

@@ -1,0 +1,1 @@
+ALTER TABLE agent_catalog ADD COLUMN IF NOT EXISTS instructions_updated_at TIMESTAMPTZ;

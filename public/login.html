@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Sign in · Nexora</title><link rel="stylesheet" href="/style.css"><style>
+body{display:grid;place-items:center;padding:22px}.login-card{width:min(420px,100%);background:#11151b;border:1px solid #2b323d;border-radius:18px;padding:28px}.login-brand{display:flex;align-items:center;gap:10px;margin-bottom:28px}.login-brand .brandmark{width:38px;height:38px}.login-card h1{font-size:24px}.sub{color:#98a2b0;font-size:13px;line-height:1.6;margin:10px 0 24px}.login-card label{display:block;font-size:12px;color:#aeb6c2;margin:14px 0 7px}.login-card input{width:100%;height:44px;padding:0 12px;background:#0b0d10;border:1px solid #353d49;border-radius:9px;color:#fff;font:inherit}.login-card button{width:100%;margin-top:12px;padding:12px;border:0;border-radius:9px;background:#e8eaed;color:#101216;font-weight:750;cursor:pointer}.login-card button.secondary{background:transparent;color:#aeb6c2;border:1px solid #353d49}.login-card button:disabled{opacity:.5}.message{min-height:22px;font-size:12px;color:#9ba6b5;margin-top:12px}.message.err{color:#ff9a9a}.login-note{font-size:10px;color:#737e8c;margin-top:22px;line-height:1.5}
+</style></head><body><main class="login-card"><div class="login-brand"><span class="brandmark">N</span><div><strong>Nexora</strong><div style="font-size:11px;color:#8993a1;margin-top:3px">Agent Workspace</div></div></div><h1 id="title">Sign in to Nexora</h1><p class="sub" id="subtitle">We'll email you a one-time code. No password needed.</p><form id="loginForm"><div id="emailRow"><label for="email">Email address</label><input id="email" type="email" autocomplete="username webauthn" required placeholder="you@example.com"></div><div id="codeRow" hidden><label for="code">6-digit code</label><input id="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="Enter the code"></div><button id="submit" type="submit">Continue</button><button id="back" class="secondary" type="button" hidden>Use a different email</button></form><section id="passkeyOffer" hidden><p class="sub">Add a passkey to sign in next time with your fingerprint, face, or device lock.</p><button id="addPasskey" type="button">Add passkey</button><button id="skipPasskey" class="secondary" type="button">Not now</button></section><p id="message" class="message" role="status" aria-live="polite"></p><p class="login-note">Your workspace is protected. Nexora follows approval-first behavior and does not take consequential external actions without your approval.</p></main>
+<script>
+(function(){
+'use strict';
+const A=window.hatchable&&window.hatchable.auth;
+const form=document.querySelector('#loginForm'),email=document.querySelector('#email'),code=document.querySelector('#code'),emailRow=document.querySelector('#emailRow'),codeRow=document.querySelector('#codeRow'),submit=document.querySelector('#submit'),back=document.querySelector('#back'),message=document.querySelector('#message'),title=document.querySelector('#title'),subtitle=document.querySelector('#subtitle'),offer=document.querySelector('#passkeyOffer');
+let step='email',hasPasskey=false;
+function say(t,err){message.textContent=t||'';message.className='message'+(err?' err':'')}
+function nextPath(){const n=new URLSearchParams(location.search).get('next')||'/';return n.charAt(0)==='/'&&n.indexOf('//')!==0?n:'/'}
+function done(){location.replace(nextPath())}
+function showOffer(){form.hidden=true;title.textContent='You’re signed in';subtitle.textContent='Secure your next sign-in';offer.hidden=false;say('')}
+if(!A){say('Sign-in is unavailable. Refresh the page and try again.',true);submit.disabled=true;return}
+A.getSession().then(s=>{if(s&&s.user)done()}).catch(()=>{});
+back.addEventListener('click',()=>{step='email';codeRow.hidden=true;emailRow.hidden=false;back.hidden=true;submit.textContent='Continue';subtitle.textContent="We'll email you a one-time code. No password needed.";say('');email.focus()});
+form.addEventListener('submit',async e=>{
+ e.preventDefault();submit.disabled=true;say('');
+ try{
+  if(step==='email'){
+   const addr=email.value.trim();if(!addr){say('Enter your email address.',true);return}
+   const result=await A.startLogin({email:addr});hasPasskey=!!(result&&result.has_passkey);
+   if(hasPasskey&&A.supportsPasskeys&&A.supportsPasskeys()){
+    try{const signed=await A.signInWithPasskey({email:addr});if(signed&&signed.user){done();return}}catch(e){}
+   }
+   step='code';emailRow.hidden=true;codeRow.hidden=false;back.hidden=false;submit.textContent='Verify code';subtitle.textContent='Enter the one-time code sent to '+addr+'.';say('Code sent. Check your inbox.');code.focus();
+  }else{
+   const signed=await A.verifyCode({email:email.value.trim(),code:code.value.trim()});
+   if(!signed||!signed.user){say('The code was not accepted. Try again.',true);return}
+   if(!hasPasskey&&A.supportsPasskeys&&A.supportsPasskeys()&&!localStorage.getItem('nexora_passkey_declined'))showOffer();else done();
+  }
+ }catch(err){say(err&&err.status===429?'Too many attempts. Wait a moment and retry.':(err&&err.message)||'Sign-in failed. Please try again.',true)}
+ finally{submit.disabled=false}
+});
+document.querySelector('#addPasskey').addEventListener('click',async()=>{try{const r=await A.registerPasskey({name:'Nexora device'});if(!r)localStorage.setItem('nexora_passkey_declined','1');done()}catch(e){say(e.message||'Could not add passkey. You can continue without one.',true)}});
+document.querySelector('#skipPasskey').addEventListener('click',()=>{localStorage.setItem('nexora_passkey_declined','1');done()});
+})();
+</script></body></html>
