@@ -1,17 +1,16 @@
 # Nexora Agent Workspace
 
-Chat, files, skills, and approval-first app building.
+Chat with an automatically selected specialist (260+), save skills and knowledge, and generate small static web apps with approval-first GitHub/Render publishing. Runs on Hatchable (https://nexora-agent.hatchable.site).
 
-This folder is a complete Hatchable project. Everything the app needs is in these files: pages, API routes, database migrations, seed data, and the hatchable.toml manifest that declares the services and keys it uses.
+## Layout
+- `api/` HTTP routes (all require a signed-in user except the platform user-deleting hook)
+- `lib/` shared code: `providers.js` (free-tier LLM routing with a 48s time budget), `agents.js` (specialist catalogue)
+- `public/` static front end; `migrations/` SQL; `hatchable.toml` manifest
 
-## Run your own copy
+## Required secrets
+`GITHUB_TOKEN` (read access to the specialist repo), plus at least one of `GROQ_API_KEY` / `OPENROUTER_API_KEY`. Only free models are used (OpenRouter ids must end in `:free`).
 
-1. Go to https://hatchable.com/deploy
-2. Bring this folder as a .zip, or point the importer at a Git repository that contains it
-3. Your copy gets its own database, its own URL, and connects to your own keys
-
-## About Hatchable
-
-Hatchable is where AI-built apps go live. Connect the AI you already use and it can build, deploy, and run apps like this one for you.
-
-Built on Hatchable. https://hatchable.com
+## Behaviour and limits
+- 40 requests per user per day; failed requests are refunded.
+- Prompts are sent to third-party free-tier providers; do not submit confidential data.
+- Generated apps are drafts: review them before pushing or deploying.

@@ -1,6 +1,6 @@
 name = "Nexora Agent Workspace"
 tagline = "One chat. The right specialist, selected automatically."
-description = "A secure AI workspace with 99 selectable specialists, free-tier model routing, private per-user chat history, and approval-before-action policy."
+description = "An AI workspace with 260+ selectable specialists, free-tier model routing, per-user chat history, and approval-before-action policy. Prompts are sent to third-party free-tier model providers (Groq, OpenRouter) whose data policies apply."
 category = "Developer Tools"
 tags = ["ai","agents","orchestration","free-llm","github"]
 
@@ -32,7 +32,7 @@ token_url = "https://github.com/login/oauth/access_token"
 scopes = ["read:user", "repo"]
 per_user = true
 required = false
-description = "GitHub access to public repositories and the signed-in user's profile."
+description = "GitHub access to search repositories and, after explicit approval, create private repositories for generated apps. The repo scope grants broad access; connect only an account you trust Nexora with."
 
 [api.headers]
 Accept = "application/vnd.github+json"
