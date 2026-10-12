@@ -1,0 +1,6 @@
+{
+  "name": "nexora-render-host",
+  "private": true,
+  "type": "module",
+  "dependencies": { "pg": "^8.13.1" }
+}

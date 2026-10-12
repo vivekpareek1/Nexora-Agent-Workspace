@@ -1,0 +1,6 @@
+{
+  "name": "nexora-agent-workspace",
+  "private": true,
+  "type": "module",
+  "description": "Nexora Agent Workspace. Runs on Hatchable (api/, lib/, public/) or on Render via render/server.js."
+}
